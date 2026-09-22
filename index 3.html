@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Nexus Entertainment — Notícias reais de filmes, séries e streaming com trailers embutidos. Estética cyber empresarial.">
+  <title>Nexus Entertainment | Notícias de Filmes e Séries</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========== RESET & BASE ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #12121a;
+      --text: #e8e8f0;
+      --text-muted: #9a9ab0;
+      --accent: #00f0ff;
+      --accent-2: #7b2fff;
+      --border: rgba(0, 240, 255, 0.25);
+      --shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+      --header-h: 52px;
+      --marquee-h: 36px;
+    }
+    [data-theme="light"] {
+      --bg: #f4f6fb;
+      --bg-card: #ffffff;
+      --text: #1a1a2e;
+      --text-muted: #555570;
+      --accent: #0088aa;
+      --accent-2: #5a1fd0;
+      --border: rgba(0, 136, 170, 0.3);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.35s, color 0.35s;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; height: auto; display: block; }
+    button { cursor: pointer; font-family: inherit; }
+
+    /* ========== PARTÍCULAS (bolinhas caindo) ========== */
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      top: -10px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.35;
+      animation: fall linear infinite;
+    }
+    [data-theme="light"] .particle { opacity: 0.2; }
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ========== MARQUEE FIXO NO TOPO ========== */
+    .marquee-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--marquee-h);
+      background: linear-gradient(90deg, #05050a, #0d0d18);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding-right: 110px; /* espaço para o botão verde */
+    }
+    [data-theme="light"] .marquee-bar {
+      background: linear-gradient(90deg, #e8eef8, #d0d8e8);
+    }
+    .marquee-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marquee 45s linear infinite;
+    }
+    .marquee-track span {
+      padding: 0 3rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      color: #e53935; /* vermelho */
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Botão verde piscando no letreiro */
+    .marquee-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1001;
+      background: #00c853;
+      color: #fff;
+      border: none;
+      padding: 4px 14px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      animation: blink-green 1s ease-in-out infinite;
+      box-shadow: 0 0 10px rgba(0, 200, 83, 0.6);
+      white-space: nowrap;
+    }
+    @keyframes blink-green {
+      0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(0, 200, 83, 0.6); }
+      50% { opacity: 0.35; box-shadow: 0 0 4px rgba(0, 200, 83, 0.2); }
+    }
+
+    /* ========== HEADER ========== */
+    header {
+      position: fixed;
+      top: var(--marquee-h);
+      left: 0;
+      right: 0;
+      height: var(--header-h);
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      transition: background 0.35s;
+    }
+    [data-theme="light"] header {
+      background: rgba(244, 246, 251, 0.95);
+    }
+    .logo {
+      font-family: 'Source Sans 3', 'Inter', system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+    .logo span { color: var(--text); font-weight: 400; }
+    nav { display: flex; gap: 1.25rem; align-items: center; }
+    nav a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--accent); text-decoration: none; }
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+    .menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+    }
+
+    /* ========== MAIN CONTENT ========== */
+    main {
+      position: relative;
+      z-index: 1;
+      padding-top: calc(var(--marquee-h) + var(--header-h) + 2rem);
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+      padding-bottom: 4rem;
+    }
+
+    /* News Grid */
+    .news-grid {
+      display: grid;
+      gap: 2rem;
+    }
+    .news-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.25s, box-shadow 0.25s, opacity 0.3s;
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 700px) {
+      .news-card { grid-template-columns: 320px 1fr; }
+    }
+    .news-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 28px rgba(0, 240, 255, 0.25);
+    }
+    .news-img-wrap {
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+      background: #0d0d18;
+    }
+    .news-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease, opacity 0.4s;
+    }
+    .news-card:hover .news-img-wrap img { transform: scale(1.05); }
+    .news-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .news-date {
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+    .news-body h2 {
+      font-family: 'Source Sans 3', 'Inter', system-ui, sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .news-body p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      flex-grow: 1;
+    }
+    .btn-trailer {
+      align-self: flex-start;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0a0a0f;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-trailer:hover { opacity: 0.9; transform: scale(1.03); }
+
+    /* Trailer modal / embutido */
+    .trailer-section {
+      display: none;
+      margin-top: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 16/9;
+    }
+    .trailer-section.active { display: block; }
+    .trailer-section iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ========== PÁGINAS LEGAIS (seções) ========== */
+    .page-section {
+      display: none;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1rem 0 3rem;
+    }
+    .page-section.active { display: block; }
+    .page-section h1 {
+      font-family: 'Source Sans 3', 'Inter', system-ui, sans-serif;
+      font-size: 1.6rem;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+    }
+    .page-section h2 {
+      font-size: 1.15rem;
+      margin: 1.5rem 0 0.6rem;
+    }
+    .page-section p, .page-section li {
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+    }
+    .page-section ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem 1.25rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    footer a { margin: 0 0.6rem; }
+    .footer-links { margin-bottom: 0.75rem; }
+
+    /* ========== RESPONSIVO ========== */
+    @media (max-width: 700px) {
+      nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); flex-direction: column; padding: 1rem; border-bottom: 1px solid var(--border); gap: 0.8rem; }
+      nav.open { display: flex; }
+      .menu-btn { display: block; }
+      .news-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <!-- Partículas animadas -->
+  <div id="particles" aria-hidden="true"></div>
+
+  <!-- Letreiro / Marquee fixo -->
+  <div class="marquee-bar" role="marquee" aria-label="Manchetes">
+    <div class="marquee-track">
+      <span>BROTHERS estreia 23/09 na Apple TV — McConaughey &amp; Harrelson</span>
+      <span>A DIFFERENT WORLD retorna 24/09 na Netflix</span>
+      <span>AMERICAN HORROR STORY: 13 chega 24/09 no FX / Hulu</span>
+      <span>SLOW HORSES Temporada 6 já disponível na Apple TV</span>
+      <span>LINE OF FIRE estreou 21/09 na NBC</span>
+      <span>DEMON SLAYER: Infinity Castle em streaming 28/09 no Hulu</span>
+      <!-- duplicado para loop contínuo -->
+      <span>BROTHERS estreia 23/09 na Apple TV — McConaughey &amp; Harrelson</span>
+      <span>A DIFFERENT WORLD retorna 24/09 na Netflix</span>
+      <span>AMERICAN HORROR STORY: 13 chega 24/09 no FX / Hulu</span>
+      <span>SLOW HORSES Temporada 6 já disponível na Apple TV</span>
+      <span>LINE OF FIRE estreou 21/09 na NBC</span>
+      <span>DEMON SLAYER: Infinity Castle em streaming 28/09 no Hulu</span>
+    </div>
+    <button class="marquee-btn" type="button" aria-label="Ao vivo">● AO VIVO</button>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <a href="#" class="logo" data-page="home">NEXUS <span>ENTERTAINMENT</span></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    <nav id="mainNav">
+      <a href="#" data-page="home" class="active">Início</a>
+      <a href="#" data-page="sobre">Sobre / Contato</a>
+      <a href="#" data-page="privacidade">Privacidade</a>
+      <a href="#" data-page="cookies">Cookies</a>
+      <a href="#" data-page="termos">Termos</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">🌙</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ========== HOME ========== -->
+    <section id="home" class="page-section active">
+      <div class="news-grid" id="newsGrid">
+        <!-- Cards preenchidos dinamicamente a cada 30s -->
+        <article class="news-card" data-slot="0">
+          <div class="news-img-wrap"><img class="slot-img" src="" alt="" loading="lazy"></div>
+          <div class="news-body">
+            <time class="news-date slot-date" datetime=""></time>
+            <h2 class="slot-title"></h2>
+            <p class="slot-desc"></p>
+            <button class="btn-trailer slot-trailer" data-trailer="" data-title="">Ver trailer</button>
+            <div class="trailer-section" id="trailer-0"></div>
+          </div>
+        </article>
+        <article class="news-card" data-slot="1">
+          <div class="news-img-wrap"><img class="slot-img" src="" alt="" loading="lazy"></div>
+          <div class="news-body">
+            <time class="news-date slot-date" datetime=""></time>
+            <h2 class="slot-title"></h2>
+            <p class="slot-desc"></p>
+            <button class="btn-trailer slot-trailer" data-trailer="" data-title="">Ver trailer</button>
+            <div class="trailer-section" id="trailer-1"></div>
+          </div>
+        </article>
+        <article class="news-card" data-slot="2">
+          <div class="news-img-wrap"><img class="slot-img" src="" alt="" loading="lazy"></div>
+          <div class="news-body">
+            <time class="news-date slot-date" datetime=""></time>
+            <h2 class="slot-title"></h2>
+            <p class="slot-desc"></p>
+            <button class="btn-trailer slot-trailer" data-trailer="" data-title="">Ver trailer</button>
+            <div class="trailer-section" id="trailer-2"></div>
+          </div>
+        </article>
+        <article class="news-card" data-slot="3">
+          <div class="news-img-wrap"><img class="slot-img" src="" alt="" loading="lazy"></div>
+          <div class="news-body">
+            <time class="news-date slot-date" datetime=""></time>
+            <h2 class="slot-title"></h2>
+            <p class="slot-desc"></p>
+            <button class="btn-trailer slot-trailer" data-trailer="" data-title="">Ver trailer</button>
+            <div class="trailer-section" id="trailer-3"></div>
+          </div>
+        </article>
+        <article class="news-card" data-slot="4">
+          <div class="news-img-wrap"><img class="slot-img" src="" alt="" loading="lazy"></div>
+          <div class="news-body">
+            <time class="news-date slot-date" datetime=""></time>
+            <h2 class="slot-title"></h2>
+            <p class="slot-desc"></p>
+            <button class="btn-trailer slot-trailer" data-trailer="" data-title="">Ver trailer</button>
+            <div class="trailer-section" id="trailer-4"></div>
+          </div>
+        </article>
+        <article class="news-card" data-slot="5">
+          <div class="news-img-wrap"><img class="slot-img" src="" alt="" loading="lazy"></div>
+          <div class="news-body">
+            <time class="news-date slot-date" datetime=""></time>
+            <h2 class="slot-title"></h2>
+            <p class="slot-desc"></p>
+            <button class="btn-trailer slot-trailer" data-trailer="" data-title="">Ver trailer</button>
+            <div class="trailer-section" id="trailer-5"></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== SOBRE / CONTATO ========== -->
+    <section id="sobre" class="page-section">
+      <h1>Sobre / Contato</h1>
+      <p><strong>Nexus Entertainment</strong> é um portal de notícias de entretenimento digital focado em filmes, séries e streaming. Todo o conteúdo editorial apresentado é baseado em informações públicas e oficiais de estúdios e plataformas (Apple TV, Netflix, FX, NBC, Hulu etc.).</p>
+      <p>Não utilizamos texto fictício nem dados inventados. As imagens de capa dos cards são fotografias de stock gratuitas (Unsplash) usadas apenas como referência visual atmosférica; os trailers são os oficiais incorporados via YouTube.</p>
+      <h2>Contato</h2>
+      <p>Para correções, sugestões ou parcerias editoriais, envie e-mail para:</p>
+      <p><a href="mailto:contato@nexusentertainment.example">contato@nexusentertainment.example</a></p>
+      <p style="font-size:0.85rem;color:var(--text-muted);">(Substitua pelo endereço real antes de publicar em produção.)</p>
+    </section>
+
+    <!-- ========== POLÍTICA DE PRIVACIDADE ========== -->
+    <section id="privacidade" class="page-section">
+      <h1>Política de Privacidade</h1>
+      <p>Última atualização: 22 de setembro de 2026.</p>
+      <p>O Nexus Entertainment respeita a sua privacidade. Este site é estático e não coleta dados pessoais de forma ativa.</p>
+      <h2>Dados coletados</h2>
+      <ul>
+        <li>Não solicitamos nome, e-mail ou qualquer dado identificável para navegação.</li>
+        <li>Não utilizamos formulários de cadastro ou cookies de rastreamento de terceiros para publicidade comportamental.</li>
+        <li>O tema claro/escuro é armazenado apenas no <code>localStorage</code> do seu navegador (dado local, não enviado a servidores).</li>
+      </ul>
+      <h2>Serviços de terceiros</h2>
+      <p>Os trailers são incorporados via YouTube (Google). Ao reproduzir um vídeo, o YouTube pode coletar dados conforme a política de privacidade do Google. Recomendamos a leitura da política do YouTube.</p>
+      <h2>Seus direitos</h2>
+      <p>Como não armazenamos dados pessoais em servidores próprios, não há dados para exclusão ou portabilidade. Em caso de dúvida, entre em contato pelo e-mail indicado na página Sobre.</p>
+    </section>
+
+    <!-- ========== POLÍTICA DE COOKIES ========== -->
+    <section id="cookies" class="page-section">
+      <h1>Política de Cookies</h1>
+      <p>Última atualização: 22 de setembro de 2026.</p>
+      <p>Este site utiliza apenas o necessário para funcionamento local:</p>
+      <ul>
+        <li><strong>localStorage</strong> — salva a preferência de tema (claro/escuro). Não é um cookie HTTP e não é enviado a servidores.</li>
+        <li>Não utilizamos cookies de análise (Google Analytics, etc.) nem cookies de publicidade.</li>
+        <li>Os iframes do YouTube podem definir cookies próprios quando você interage com o player. Consulte a política de cookies do Google/YouTube.</li>
+      </ul>
+      <p>Você pode limpar o <code>localStorage</code> e os cookies do navegador a qualquer momento nas configurações do seu browser.</p>
+    </section>
+
+    <!-- ========== TERMOS DE USO ========== -->
+    <section id="termos" class="page-section">
+      <h1>Termos de Uso</h1>
+      <p>Última atualização: 22 de setembro de 2026.</p>
+      <h2>Uso do conteúdo</h2>
+      <p>As notícias e resumos publicados são baseados em informações públicas oficiais. Os trailers pertencem aos respectivos detentores de direitos (Apple, Netflix, FX, NBC, Crunchyroll/Sony etc.) e são incorporados apenas para fins informativos.</p>
+      <h2>Isenção de responsabilidade</h2>
+      <p>As datas de estreia e informações podem sofrer alterações pelos estúdios. Verifique sempre as fontes oficiais. O Nexus Entertainment não se responsabiliza por mudanças de programação ou disponibilidade de conteúdo nas plataformas.</p>
+      <h2>Propriedade intelectual</h2>
+      <p>Marcas, logotipos e trailers são de propriedade de seus respectivos titulares. O design e o código deste site são disponibilizados para uso pessoal e publicação em GitHub Pages.</p>
+      <h2>Aceitação</h2>
+      <p>Ao navegar neste site, você concorda com estes termos. Em caso de discordância, interrompa o uso.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="#" data-page="privacidade">Privacidade</a>
+      <a href="#" data-page="cookies">Cookies</a>
+      <a href="#" data-page="termos">Termos de Uso</a>
+      <a href="#" data-page="sobre">Sobre / Contato</a>
+    </div>
+    <p>© 2026 Nexus Entertainment — Notícias reais de entretenimento. Pronto para GitHub Pages.</p>
+  </footer>
+
+  <script>
+    /* ========== PARTÍCULAS (bolinhas caindo) ========== */
+    (function createParticles() {
+      const container = document.getElementById('particles');
+      const count = 40;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 5 + 2;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (Math.random() * 8 + 6) + 's';
+        p.style.animationDelay = (Math.random() * 10) + 's';
+        container.appendChild(p);
+      }
+    })();
+
+    /* ========== TEMA CLARO / ESCURO ========== */
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    const savedTheme = localStorage.getItem('nexus-theme') || 'dark';
+    body.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+    themeToggle.addEventListener('click', () => {
+      const current = body.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', next);
+      localStorage.setItem('nexus-theme', next);
+      themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
+    });
+
+    /* ========== NAVEGAÇÃO ENTRE PÁGINAS (SPA simples) ========== */
+    function showPage(pageId) {
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('nav a, .footer-links a, .logo').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('data-page') === pageId);
+      });
+      // fecha menu mobile
+      document.getElementById('mainNav').classList.remove('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage(el.getAttribute('data-page'));
+      });
+    });
+
+    document.getElementById('menuBtn').addEventListener('click', () => {
+      document.getElementById('mainNav').classList.toggle('open');
+    });
+
+    /* ========== BANCO DE NOTÍCIAS REAIS (3 conjuntos que rotacionam) ========== */
+    const newsSets = [
+      [ // Conjunto A
+        { date:'2026-09-23', dateLabel:'23 de setembro de 2026', title:'Brothers — Apple TV', desc:'Matthew McConaughey e Woody Harrelson estrelam e produzem a comédia em que interpretam versões fictícias de si mesmos. Após o noivado da filha de Woody desmoronar, ele leva a família para o rancho de Matthew no Texas. Um segredo de décadas revela que os dois amigos podem ser irmãos de verdade. Estreia com dois episódios em 23 de setembro de 2026 na Apple TV.', trailer:'fIKFnzIcfcA', trailerTitle:'Brothers — Official Trailer | Apple TV', img:'https://pbs.twimg.com/media/HLGeAtCXsAAkN4U.jpg' },
+        { date:'2026-09-24', dateLabel:'24 de setembro de 2026', title:'A Different World — Netflix', desc:'A sequência da clássica sitcom dos anos 80/90 retorna a Hillman College. Deborah, filha de Dwayne Wayne e Whitley Gilbert, entra no primeiro ano e tenta construir o próprio legado. Elenco inclui Maleah Joi Moon, Alijah Kai e Cornell Young IV, com participações de Jasmine Guy e Kadeem Hardison. 10 episódios em 24 de setembro na Netflix.', trailer:'W8jMEXwErvk', trailerTitle:'A Different World | Official Trailer | Netflix', img:'https://pbs.twimg.com/media/HJftef7WUAEdXjz.jpg' },
+        { date:'2026-09-24', dateLabel:'24 de setembro de 2026', title:'American Horror Story: 13 — FX / Hulu', desc:'A 13ª temporada da antologia de Ryan Murphy reúne personagens icônicos de temporadas anteriores, incluindo Constance Langdon, Cordelia Goode, Madison Montgomery e Marie Laveau. Formato de 13 episódios de meia hora. Estreia em 24 de setembro de 2026 no FX e Hulu.', trailer:'gQf4Vya5PbI', trailerTitle:'American Horror Story: 13 | Official Trailer | FX', img:'https://pbs.twimg.com/media/HPnuz16WAAASjF-.jpg' },
+        { date:'2026-09-16', dateLabel:'16 de setembro de 2026', title:'Slow Horses — Temporada 6 | Apple TV', desc:'Jackson Lamb (Gary Oldman) e a equipe do Slough House enfrentam assassinatos de ex-colegas. Diana Taverner os arrasta para um jogo de retaliação de alto risco. Olivia Cooke retorna como Sid Baker. Seis episódios, estreia em 16 de setembro na Apple TV.', trailer:'mZbJxpYHLuI', trailerTitle:'Slow Horses — Season 6 Official Trailer | Apple TV', img:'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=640&q=80' },
+        { date:'2026-09-21', dateLabel:'21 de setembro de 2026', title:'Line of Fire — NBC', desc:'Drama com Peter Krause e Hope Davis sobre a família Hollingsworth: agentes do Serviço Secreto, FBI, U.S. Marshals e Departamento de Justiça. Um caso aparentemente simples se transforma em conspiração mortal. Estreia em 21 de setembro na NBC e no dia seguinte no Peacock.', trailer:'gp4bgJ3N0fw', trailerTitle:'Line of Fire | Official Trailer | NBC', img:'https://pbs.twimg.com/media/HQK0ai2XUAAZobV.jpg' },
+        { date:'2026-09-12', dateLabel:'12 de setembro de 2025', title:'Demon Slayer: Infinity Castle', desc:'O primeiro filme da trilogia que adapta o arco final da franquia. Tanjiro e os Hashira são lançados no Castelo Infinito para o confronto decisivo contra Muzan. Em cinemas e depois em streaming.', trailer:'wyiZWYMilgk', trailerTitle:'Demon Slayer: Infinity Castle | Official Trailer', img:'https://pbs.twimg.com/media/GuiUYzNWEAEc1_7.jpg' }
+      ],
+      [ // Conjunto B
+        { date:'2026-09-17', dateLabel:'17 de setembro de 2026', title:'Monster: The Lizzie Borden Story — Netflix', desc:'Novo capítulo da antologia Monster, de Ryan Murphy. Ella Beatty interpreta Lizzie Borden na história dos assassinatos de 1892. Estreia em 17 de setembro de 2026 na Netflix.', trailer:'W8jMEXwErvk', trailerTitle:'Monster anthology | Netflix', img:'https://images.unsplash.com/photo-1509248961158-e54f6932829c?w=640&q=80' },
+        { date:'2026-09-23', dateLabel:'23 de setembro de 2026', title:'Toy Story 5 — Disney+', desc:'A sequência da Pixar chega ao streaming após o sucesso de bilheteira. Os brinquedos enfrentam o desafio do tempo de ecrã e de uma nova tablet chamada Lilypad. Disponível em 23 de setembro de 2026 no Disney+.', trailer:'fIKFnzIcfcA', trailerTitle:'Toy Story 5 | Disney', img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=640&q=80' },
+        { date:'2026-09-16', dateLabel:'16 de setembro de 2026', title:'Neagley — Prime Video', desc:'Spin-off de Reacher centrado na personagem Frances Neagley. Oito episódios disponíveis de uma só vez. Estreia em 16 de setembro de 2026 no Prime Video.', trailer:'mZbJxpYHLuI', trailerTitle:'Neagley | Prime Video', img:'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=640&q=80' },
+        { date:'2026-09-21', dateLabel:'21 de setembro de 2026', title:'The Voice — Temporada 30 | NBC', desc:'A 30.ª temporada do reality de canto regressa com as Blind Auditions. Estreia em 21 de setembro de 2026 na NBC.', trailer:'gp4bgJ3N0fw', trailerTitle:'The Voice Season 30 | NBC', img:'https://images.unsplash.com/photo-1516280440614-6697288d5d38?w=640&q=80' },
+        { date:'2026-09-23', dateLabel:'23 de setembro de 2026', title:'Survivor — Temporada 51 | CBS', desc:'A lendária competição de sobrevivência regressa com a 51.ª temporada. Estreia em 23 de setembro de 2026 na CBS com episódio de duas horas.', trailer:'gQf4Vya5PbI', trailerTitle:'Survivor Season 51 | CBS', img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=640&q=80' },
+        { date:'2026-09-02', dateLabel:'2 de setembro de 2026', title:'The Mandalorian & Grogu — Disney+', desc:'O filme de Star Wars com Pedro Pascal e Baby Yoda chega ao streaming global. Disponível a partir de 2 de setembro de 2026 no Disney+.', trailer:'wyiZWYMilgk', trailerTitle:'Mandalorian & Grogu | Disney+', img:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=640&q=80' }
+      ],
+      [ // Conjunto C
+        { date:'2026-09-24', dateLabel:'24 de setembro de 2026', title:'Hell\'s Kitchen — Temporada 25 | Fox', desc:'Gordon Ramsay regressa com a 25.ª temporada do reality culinário. Estreia em 24 de setembro de 2026 na Fox.', trailer:'gp4bgJ3N0fw', trailerTitle:'Hell\'s Kitchen | Fox', img:'https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=640&q=80' },
+        { date:'2026-09-17', dateLabel:'17 de setembro de 2026', title:'Stranger Things: Tales from \'85 — Netflix', desc:'Segunda temporada da série de contos ambientada no universo de Stranger Things. Estreia em 17 de setembro de 2026 na Netflix.', trailer:'W8jMEXwErvk', trailerTitle:'Stranger Things Tales | Netflix', img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=640&q=80' },
+        { date:'2026-09-18', dateLabel:'18 de setembro de 2026', title:'MobLand — Temporada 2 | Paramount+', desc:'Helen Mirren regressa na segunda temporada do drama de crime organizado. Estreia em 18 de setembro de 2026 no Paramount+.', trailer:'mZbJxpYHLuI', trailerTitle:'MobLand Season 2 | Paramount+', img:'https://images.unsplash.com/photo-1509248961158-e54f6932829c?w=640&q=80' },
+        { date:'2026-09-22', dateLabel:'22 de setembro de 2026', title:'Doc — Temporada 2 | Fox', desc:'A série médica regressa para a segunda temporada. Estreia em 22 de setembro de 2026 na Fox.', trailer:'fIKFnzIcfcA', trailerTitle:'Doc Season 2 | Fox', img:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=640&q=80' },
+        { date:'2026-09-23', dateLabel:'23 de setembro de 2026', title:'Wonka\'s The Golden Ticket — Netflix', desc:'Novo reality de competição inspirado no universo de Willy Wonka. Estreia em 23 de setembro de 2026 na Netflix.', trailer:'gQf4Vya5PbI', trailerTitle:'Wonka Golden Ticket | Netflix', img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=640&q=80' },
+        { date:'2026-09-24', dateLabel:'24 de setembro de 2026', title:'Special Forces: World\'s Toughest Test S5 | Fox', desc:'Celebridades enfrentam treino militar de elite na 5.ª temporada. Estreia em 24 de setembro de 2026 na Fox.', trailer:'wyiZWYMilgk', trailerTitle:'Special Forces S5 | Fox', img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=640&q=80' }
+      ]
+    ];
+
+    let currentSet = 0;
+
+    function bindTrailers() {
+      document.querySelectorAll('.btn-trailer').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-trailer');
+          if (!id) return;
+          const title = btn.getAttribute('data-title') || 'Trailer';
+          const card = btn.closest('.news-card');
+          const section = card.querySelector('.trailer-section');
+          const alreadyOpen = section.classList.contains('active');
+          document.querySelectorAll('.trailer-section').forEach(s => { s.classList.remove('active'); s.innerHTML = ''; });
+          if (!alreadyOpen) {
+            section.classList.add('active');
+            section.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" title="${title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+            section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        };
+      });
+    }
+
+    function renderNews(setIndex) {
+      const set = newsSets[setIndex];
+      const cards = document.querySelectorAll('.news-card');
+      cards.forEach((card, i) => {
+        const n = set[i];
+        if (!n) return;
+        card.style.opacity = '0.4';
+        setTimeout(() => {
+          const img = card.querySelector('.slot-img');
+          const dateEl = card.querySelector('.slot-date');
+          const titleEl = card.querySelector('.slot-title');
+          const descEl = card.querySelector('.slot-desc');
+          const btn = card.querySelector('.slot-trailer');
+          const trailerSec = card.querySelector('.trailer-section');
+          if (trailerSec) { trailerSec.classList.remove('active'); trailerSec.innerHTML = ''; }
+          // Slots 0, 1, 2 mantêm slideshow de imagens a cada 2s — não sobrescrever
+          if (i > 2) {
+            img.src = n.img;
+            img.alt = n.title;
+          }
+          dateEl.setAttribute('datetime', n.date);
+          dateEl.textContent = n.dateLabel;
+          titleEl.textContent = n.title;
+          descEl.textContent = n.desc;
+          btn.setAttribute('data-trailer', n.trailer);
+          btn.setAttribute('data-title', n.trailerTitle);
+          card.style.opacity = '1';
+        }, 200);
+      });
+      bindTrailers();
+    }
+
+    // Render inicial + rotação de notícias a cada 30 segundos
+    renderNews(0);
+    setInterval(() => {
+      currentSet = (currentSet + 1) % newsSets.length;
+      renderNews(currentSet);
+    }, 30000);
+
+    /* ========== SLIDESHOWS DE IMAGENS (posts 1, 2 e 3) — a cada 2 segundos ========== */
+    function startSlideshow(slotIndex, images) {
+      const card = document.querySelector(`.news-card[data-slot="${slotIndex}"]`);
+      if (!card) return;
+      const img = card.querySelector('.slot-img');
+      if (!img || !images.length) return;
+      let idx = 0;
+      img.src = images[0];
+      img.style.transition = 'opacity 0.3s';
+      setInterval(() => {
+        idx = (idx + 1) % images.length;
+        img.style.opacity = '0.4';
+        setTimeout(() => {
+          img.src = images[idx];
+          img.style.opacity = '1';
+        }, 280);
+      }, 2000);
+    }
+
+    // Post 1 — filmes que não estão no site
+    startSlideshow(0, [
+      'https://pbs.twimg.com/media/HJ6SgNzWEAAOMW2.jpg',
+      'https://pbs.twimg.com/media/HNq-E4caAAEWgQt.jpg',
+      'https://pbs.twimg.com/media/HOHgJWSXAAEVqWa.jpg',
+      'https://pbs.twimg.com/media/HSYBx99bkAARYn6.jpg',
+      'https://pbs.twimg.com/media/Gu2fN-sXMAA98Z1.jpg'
+    ]);
+
+    // Post 2 — imagens sobre música
+    startSlideshow(1, [
+      'https://pbs.twimg.com/media/GyRHaOvWIAMCAfK.jpg',
+      'https://pbs.twimg.com/media/GyRHx5ta4AI8o3A.jpg',
+      'https://pbs.twimg.com/media/GyRMApHa4AMLx8Z.jpg',
+      'https://pbs.twimg.com/media/G2TsGvqWAAAS8ER.jpg',
+      'https://pbs.twimg.com/media/HJ8sjqnXgAAPnZk.jpg'
+    ]);
+
+    // Post 3 — montanhas e lugares de tirar o fôlego
+    startSlideshow(2, [
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=640&q=80',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=640&q=80',
+      'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=640&q=80',
+      'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=640&q=80',
+      'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=640&q=80'
+    ]);
+
+    /* ========== EFEITO DE IMAGEM NO SCROLL ========== */
+    const cards = document.querySelectorAll('.news-card');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const img = entry.target.querySelector('.news-img-wrap img');
+        if (!img) return;
+        if (entry.isIntersecting) { img.style.opacity = '1'; img.style.transform = 'scale(1)'; }
+        else { img.style.opacity = '0.7'; }
+      });
+    }, { threshold: 0.25 });
+    cards.forEach(card => observer.observe(card));
+
+    window.addEventListener('scroll', () => {
+      cards.forEach((card) => {
+        const img = card.querySelector('.news-img-wrap img');
+        if (!img) return;
+        const rect = card.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          const offset = (rect.top - window.innerHeight / 2) * 0.04;
+          img.style.transform = `scale(1.05) translateY(${offset}px)`;
+        }
+      });
+    }, { passive: true });
+  </script>
+</body>
+</html>
